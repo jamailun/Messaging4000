@@ -84,6 +84,12 @@ public class MessagesFrame extends JFrame implements KeyListener {
 		msg = msg.replaceAll("\n", "");
 		if(msg.isEmpty())
 			return;
+		if( ! msg.startsWith("/")) {
+			client.trySendMessage(msg);
+			try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
+			textArea.setText("");
+			return;
+		}
 		if(msg.equals("/stop")) {
 			setVisible(false);
 			client.shutdown();
@@ -92,21 +98,15 @@ public class MessagesFrame extends JFrame implements KeyListener {
 		String[] words = msg.split(" ");
 		if(words[0].equals("/rename")) {
 			if(words.length < 2) {
-				JOptionPane.showMessageDialog(this, "Il faut préciser un nouveau pseudo !.", "Format de commande incorrect.", JOptionPane.ERROR_MESSAGE);
-				textArea.setText("");
+				JOptionPane.showMessageDialog(this, "Il faut préciser un nouveau pseudo !", "Format de commande incorrect.", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			client.tryRename(words[1]);
 			textArea.setText("");
 			return;
 		}
-		client.trySendMessage(msg);
-		try {
-			Thread.sleep(2);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		textArea.setText("");
+		JOptionPane.showMessageDialog(this, "Commande inconnue.", "Erreur.", JOptionPane.ERROR_MESSAGE);
+
 	}
 
 	@Override
