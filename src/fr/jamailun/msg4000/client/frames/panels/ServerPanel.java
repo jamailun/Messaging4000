@@ -22,7 +22,7 @@ public class ServerPanel extends JPanel {
 		name.setBackground(bg);
 		add(name);
 
-		conn = new JLabel(serverInfo.getConnected() + "/" + serverInfo.getMaxConnected() + " joueurs connectés");
+		conn = new JLabel(serverInfo.getConnected() + "/" + serverInfo.getMaxConnected() + " connectés");
 		conn.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
 		conn.setForeground(Color.WHITE);
 		conn.setBackground(bg);
@@ -31,7 +31,7 @@ public class ServerPanel extends JPanel {
 
 	public void replaceLabels() {
 		name.setBounds(10,3, getWidth()-20, getHeight()/2);
-		conn.setBounds(getWidth()-250,getHeight()/2-3,250, getHeight()/2);
+		conn.setBounds(getWidth()-180,getHeight()/2-3,250, getHeight()/2);
 	}
 
 }

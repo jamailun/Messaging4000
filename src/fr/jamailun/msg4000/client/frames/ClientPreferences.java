@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class SavedPreferences {
+public class ClientPreferences {
 	private String uri;
 
 	public final static String KEY_ADDRESS = "address";
@@ -15,7 +15,7 @@ public class SavedPreferences {
 
 	private Map<String, String> prefs = new HashMap<>();
 
-	public SavedPreferences() {
+	public ClientPreferences() {
 		String tempDir = System.getProperty("java.io.tmpdir");
 		uri = tempDir + "messaging4000.prefs";
 		File file = new File(uri);

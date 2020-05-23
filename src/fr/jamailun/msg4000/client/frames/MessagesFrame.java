@@ -2,6 +2,7 @@ package fr.jamailun.msg4000.client.frames;
 
 import fr.jamailun.msg4000.client.frames.panels.Message;
 import fr.jamailun.msg4000.client.MessagingClient;
+import fr.jamailun.msg4000.common.StaticConfiguration;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,13 +10,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessagesFrame extends JFrame implements KeyListener {
 
 	private JPanel displayPanel;
 	private JTextArea textArea;
-	private int size = 0;
 	public static final Color backgroundColor = Color.LIGHT_GRAY;
+
+	private List<Message> messages = new ArrayList<>();
 
 	private final MessagingClient client;
 	public MessagesFrame(MessagingClient client) {
@@ -25,7 +29,7 @@ public class MessagesFrame extends JFrame implements KeyListener {
 		this.client = client;
 		super.setPreferredSize(new Dimension(800, 800));
 		super.setSize(800, 600);
-		super.setResizable(false);
+		super.setResizable(true);
 		super.setVisible(false);
 		super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		super.addWindowListener(new WindowAdapter() {
@@ -40,6 +44,7 @@ public class MessagesFrame extends JFrame implements KeyListener {
 		super.add(displayPanel);
 
 		textArea = new JTextArea();
+		textArea.setLayout(null);
 		textArea.setBackground(Color.LIGHT_GRAY);
 		textArea.setBounds(1,481,782,79);
 		textArea.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -59,11 +64,19 @@ public class MessagesFrame extends JFrame implements KeyListener {
 	}
 
 	private void createMessageBox(Message box) {
-		//box.setBorder(BorderFactory.createLineBorder(Color.black));
-		box.setBounds(0, (Message.partHeight+1) * (size), box.getCurrentWidth() + 10, Message.partHeight);
+		//box.setBorder(BorderFactory.createLineBorder(new Color(new Random().nextInt(255),new Random().nextInt(255),new Random().nextInt(255))));
+		messages.add(box);
+		if(messages.size() > StaticConfiguration.MAX_MESSAGES) {
+			messages.get(0).setVisible(false);
+			messages.get(0).setEnabled(false);
+			displayPanel.remove(messages.get(0));
+			messages.remove(0);
+		}
+		for(int i = 0; i < messages.size(); i++)
+			messages.get(i).setBounds(2, (Message.partHeight+1) * (i), getWidth(), Message.partHeight);
+		//box.setBounds(0, (Message.partHeight+1) * (messages.size()), getWidth(), Message.partHeight);
 		displayPanel.add(box);
 		repaint();
-		size++;
 	}
 
 	public void sendMessage() {
@@ -89,7 +102,7 @@ public class MessagesFrame extends JFrame implements KeyListener {
 		}
 		client.trySendMessage(msg);
 		try {
-			Thread.sleep(10);
+			Thread.sleep(2);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -112,5 +125,9 @@ public class MessagesFrame extends JFrame implements KeyListener {
 	public void keyReleased(KeyEvent keyEvent) {
 		if(keyEvent.getKeyCode() == KeyEvent.VK_SHIFT)
 			shift = false;
+	}
+
+	public void updateTitle(String name, String room) {
+		setTitle("MESSAGING4000 - " + name + " : [" + room + "]");
 	}
 }

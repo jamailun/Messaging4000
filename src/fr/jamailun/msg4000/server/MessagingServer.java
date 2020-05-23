@@ -12,17 +12,14 @@ public class MessagingServer {
     private MessagingServer() {
         JavaServer server = new JavaServer(StaticConfiguration.port);
 		rooms = new RoomsManager(server);
-		rooms.registerNewRoom(server.addNewVirtualServer("room1", StaticConfiguration.port+1, 10));
-		rooms.registerNewRoom(server.addNewVirtualServer("room2", StaticConfiguration.port+2, 20));
-		rooms.registerNewRoom(server.addNewVirtualServer("room3", StaticConfiguration.port+3, 50));
         registerCommands(server);
         server.start();
     }
 
     private void registerCommands(JavaServer server) {
-        if(server.usafeGetMultipleCommandExecutor() == null)
+        if(server.unsafeGetMultipleCommandExecutor() == null)
             System.err.println("Le server ne tourne pas sous MultipleCommandExecutor");
-        server.usafeGetMultipleCommandExecutor().registerCommand("createRoom", args -> {
+        server.unsafeGetMultipleCommandExecutor().registerCommand("createRoom", args -> {
 			if (args.length < 2) {
 				System.err.println("[CMD ERROR] Usage : /createVS <port> <name>.");
 				return;
@@ -57,7 +54,7 @@ public class MessagingServer {
 			}
         }, "Create a new room. /+ <port> <name>", "+");
 
-		server.usafeGetMultipleCommandExecutor().registerCommand("removeRoom", args -> {
+		server.unsafeGetMultipleCommandExecutor().registerCommand("removeRoom", args -> {
 			if(args.length < 1) {
 				System.err.println("[CMD ERROR] Usage : '- <port>'.");
 				return;

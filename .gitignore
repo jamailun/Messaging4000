@@ -1,0 +1,6 @@
+# Project exclude paths
+/out/
+
+message4000.iml
+
+/src/manifests/

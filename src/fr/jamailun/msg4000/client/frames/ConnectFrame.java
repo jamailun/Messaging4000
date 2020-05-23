@@ -11,8 +11,8 @@ public class ConnectFrame extends JFrame {
 
 	private final JTextField addressF, nameF;
 
-	private final SavedPreferences prefs;
-	public ConnectFrame(SavedPreferences prefs) {
+	private final ClientPreferences prefs;
+	public ConnectFrame(ClientPreferences prefs) {
 		super("MESSAGING4000 - Connexion");
 		this.prefs = prefs;
 		setLayout(null);
@@ -44,14 +44,14 @@ public class ConnectFrame extends JFrame {
 		nameL.setBounds(80, 200, 400, 20);
 		panel.add(nameL);
 
-		addressF = new JTextField(prefs.getPreference(SavedPreferences.KEY_ADDRESS));
+		addressF = new JTextField(prefs.getPreference(ClientPreferences.KEY_ADDRESS));
 		addressF.setBounds(80, 150, 640, 34);
 		addressF.setForeground(Color.BLACK);
 		addressF.setBackground(Color.WHITE);
 		addressF.setFont(fontN);
 		panel.add(addressF);
 
-		nameF = new JTextField(prefs.getPreference(SavedPreferences.KEY_USERNAME));
+		nameF = new JTextField(prefs.getPreference(ClientPreferences.KEY_USERNAME));
 		nameF.setBounds(80, 230, 640, 34);
 		nameF.setForeground(Color.BLACK);
 		nameF.setBackground(Color.WHITE);
@@ -99,8 +99,8 @@ public class ConnectFrame extends JFrame {
 		MessagingClient messagingClient = new MessagingClient(address, port, nameF.getText());
 		if(messagingClient.isValid()) {
 			dispose();
-			prefs.changePreference(SavedPreferences.KEY_ADDRESS, addressF.getText());
-			prefs.changePreference(SavedPreferences.KEY_USERNAME, nameF.getText());
+			prefs.changePreference(ClientPreferences.KEY_ADDRESS, addressF.getText());
+			prefs.changePreference(ClientPreferences.KEY_USERNAME, nameF.getText());
 		} else {
 			JOptionPane.showMessageDialog(null, "Impossible de se connecter à cette adresse !", "Serveur introuvable", JOptionPane.ERROR_MESSAGE);
 			canPress = true;
@@ -113,7 +113,7 @@ public class ConnectFrame extends JFrame {
 	}
 
 	public static void main(String[] a) {
-		SavedPreferences prefs = new SavedPreferences();
+		ClientPreferences prefs = new ClientPreferences();
 		new ConnectFrame(prefs);
 	}
 }

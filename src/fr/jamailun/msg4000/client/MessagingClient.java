@@ -111,14 +111,19 @@ public class MessagingClient {
         client.getProxySocket().sendPacket(new ClientSendMessage(message));
     }
 
+    private String roomName = "none", username = "xxx";
     public void tryRename(String name) {
         client.getProxySocket().sendPacket(new RenamePacket(name));
+        username = name;
+        frame.updateTitle(username, roomName);
     }
 
     public boolean tryConnect(int port) {
         for(ServerInfo serverInfo : client.getServerList().getServers()) {
             if(serverInfo.getPort() == port) {
                 client.startConnectionToVirtualServer(serverInfo);
+                roomName = serverInfo.getName();
+                frame.updateTitle(username, roomName);
                 return true;
             }
         }

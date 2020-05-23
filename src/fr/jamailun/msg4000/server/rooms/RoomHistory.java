@@ -1,24 +1,39 @@
 package fr.jamailun.msg4000.server.rooms;
 
+import fr.jamailun.msg4000.common.StaticConfiguration;
 import fr.jamailun.msg4000.common.packets.ServerTransferMessage;
+import fr.jamailun.msg4000.server.MessagingServer;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomSaved {
+public class RoomHistory {
 
 	private final List<ServerTransferMessage> history;
 
 	private final String uri;
-	public RoomSaved(int port) {
+	public RoomHistory(int port) {
+		String uri1;
 		history = new ArrayList<>();
-		uri = System.getProperty("user.dir") + port + ".data";
+		try {
+			String uriDir = new File(MessagingServer.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/rooms/";
+			new File(uriDir).mkdirs();
+			uri1 = uriDir + "room_"+port+".data";
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			uri1 = "";
+		}
+		uri = uri1;
+
 		File file = new File(uri);
 		if( ! file.exists()) {
 			try {
 				if ( ! file.createNewFile() )
 					System.err.println("File " + uri + " could not be created.");
+				else
+					System.out.println("File " + uri + " created.");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -30,10 +45,7 @@ public class RoomSaved {
 
 	private void readFile() {
 		history.clear();
-		try {
-			new FileWriter(uri, false).close();
-
-			BufferedReader reader = new BufferedReader(new FileReader(uri));
+		try(BufferedReader reader = new BufferedReader(new FileReader(uri))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(" ", 3);
@@ -51,8 +63,6 @@ public class RoomSaved {
 				ServerTransferMessage pak = new ServerTransferMessage(time, parts[1], parts[2]);
 				add(pak);
 			}
-			reader.close();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -60,13 +70,13 @@ public class RoomSaved {
 
 	public void add(ServerTransferMessage msg) {
 		history.add(msg);
+		if(history.size() > StaticConfiguration.MAX_MESSAGES)
+			history.remove(0);
 	}
 
 	public void save() {
 		try {
-			new FileWriter(uri, false).close();
-
-			BufferedWriter writer = new BufferedWriter(new FileWriter(uri));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(uri, false));
 			history.forEach(msg -> {
 				try {
 					String m = msg.getMessage().replaceAll("\n", "");
@@ -85,4 +95,7 @@ public class RoomSaved {
 		}
 	}
 
+	public List<ServerTransferMessage> getList() {
+		return new ArrayList<>(history);
+	}
 }

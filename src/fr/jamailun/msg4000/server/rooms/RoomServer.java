@@ -12,11 +12,11 @@ import fr.jamailun.stds.server.VirtualServer;
 class RoomServer {
 
 	private final VirtualServer virtualServer;
-	private final RoomSaved history;
+	private final RoomHistory history;
 
 	RoomServer(VirtualServer virtualServer) {
 		this.virtualServer = virtualServer;
-		history = new RoomSaved(virtualServer.getPort());
+		history = new RoomHistory(virtualServer.getPort());
 		setupRoomListener();
 	}
 
@@ -57,6 +57,7 @@ class RoomServer {
 			@Override
 			public void clientConnected(ConnectedSocket connectedSocket) {
 				virtualServer.sendPacketToClients(new SystemMessage(StaticConfiguration.ENTER_ROOM), connectedSocket, false);
+				transferHistory(connectedSocket);
 			}
 
 			@Override
@@ -64,5 +65,23 @@ class RoomServer {
 				history.save();
 			}
 		});
+	}
+
+	private void transferHistory(ConnectedSocket client) {
+		new Thread(() -> {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			for(ServerTransferMessage packet : history.getList()) {
+				virtualServer.sendPacketToClient(packet, client);
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 }
